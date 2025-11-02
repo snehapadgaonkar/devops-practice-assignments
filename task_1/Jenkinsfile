@@ -1,0 +1,27 @@
+pipeline {
+  agent any
+  stages {
+    stage('Build Docker Image') {
+      steps {
+        script {
+          sh 'docker build -t hello-devops:jenkins .'
+        }
+      }
+    }
+    stage('Run Container') {
+      steps {
+        script {
+          // stop any existing container
+          sh 'docker rm -f hello-devops-jenkins || true'
+          // run container mapped to 5000
+          sh 'docker run -d --name hello-devops-jenkins -p 5000:5000 hello-devops:jenkins'
+        }
+      }
+    }
+  }
+  post {
+    always {
+      echo "Pipeline finished"
+    }
+  }
+}
