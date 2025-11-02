@@ -6,6 +6,6 @@ variable "container_name" {
 
 variable "host_port" {
   type        = number
-  default     = 8080
+  default     = 8081
   description = "Host port to map to container port 80"
 }
