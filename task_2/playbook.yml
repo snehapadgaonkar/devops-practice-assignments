@@ -1,0 +1,33 @@
+---
+- name: Configure local environment
+  hosts: local
+  become: yes
+  tasks:
+
+    - name: Ensure Nginx is installed
+      apt:
+        name: nginx
+        state: present
+        update_cache: yes
+
+    - name: Create a new user 'devopsuser'
+      user:
+        name: devopsuser
+        state: present
+        shell: /bin/bash
+
+    - name: Create a directory for the project
+      file:
+        path: /home/devopsuser/project
+        state: directory
+        mode: '0755'
+        owner: devopsuser
+
+    - name: Copy a sample configuration file
+      copy:
+        content: |
+          Welcome to DevOps Practice!
+          Managed by Ansible 🚀
+        dest: /home/devopsuser/project/config.txt
+        owner: devopsuser
+        mode: '0644'
