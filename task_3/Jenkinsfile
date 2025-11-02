@@ -1,0 +1,47 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                echo "Cloning repository from GitHub"
+                git branch: 'main', url: 'https://github.com/snehapadgaonkar/devops-practice-assignments.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                dir('task_1') {
+                    bat 'docker build -t hello-devops:latest .'
+                }
+            }
+        }
+
+        stage('Run Container') {
+            steps {
+                dir('task_1') {
+                    bat 'docker run -d --name hello-container -p 5000:5000 hello-devops:latest'
+                }
+            }
+        }
+
+        stage('Test Application') {
+            steps {
+                bat 'curl -I http://localhost:5000'
+            }
+        }
+
+        stage('Cleanup') {
+            steps {
+                bat 'docker stop hello-container'
+                bat 'docker rm hello-container'
+            }
+        }
+    }
+
+    post {
+        always {
+            echo "Pipeline completed."
+        }
+    }
+}
