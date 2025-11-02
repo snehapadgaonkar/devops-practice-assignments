@@ -2,9 +2,10 @@ pipeline {
     agent any
 
     stages {
+
         stage('Checkout') {
             steps {
-                echo "Cloned repository from GitHub"
+                echo 'Cloning repository from GitHub'
             }
         }
 
@@ -16,10 +17,26 @@ pipeline {
             }
         }
 
-        stage('Run Container') {
+        stage('Run and Test Container') {
             steps {
                 dir('task_1') {
-                    bat 'docker run --rm hello-devops:latest'
+                    bat '''
+                        echo Starting container...
+                        docker run -d --name hello-test -p 5000:5000 hello-devops:latest
+
+                        echo Waiting for app to start...
+                        timeout /t 5 >nul
+
+                        echo Checking if app is running...
+                        docker ps
+
+                        echo Fetching container logs:
+                        docker logs hello-test
+
+                        echo Stopping container...
+                        docker stop hello-test
+                        docker rm hello-test
+                    '''
                 }
             }
         }
@@ -27,7 +44,14 @@ pipeline {
 
     post {
         always {
-            echo 'Pipeline finished'
+            echo 'Pipeline execution complete. Cleaning up resources...'
+            bat 'docker system prune -f'
+        }
+        success {
+            echo '✅ Build & Test completed successfully!'
+        }
+        failure {
+            echo '❌ Build failed. Check logs above for details.'
         }
     }
 }
