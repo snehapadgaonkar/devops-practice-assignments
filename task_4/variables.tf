@@ -1,11 +1,11 @@
 variable "container_name" {
   type        = string
-  description = "Name for the docker container"
-  default     = "nginx_server"
+  default     = "nginx_demo"
+  description = "Name of the container"
 }
 
 variable "host_port" {
   type        = number
-  description = "Host port to map to container's port 80"
   default     = 8080
+  description = "Host port to map to container port 80"
 }
